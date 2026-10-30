@@ -1,4 +1,5 @@
 import pandas as pd
+from ucimlrepo import fetch_ucirepo
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
@@ -6,19 +7,25 @@ from sklearn.metrics import accuracy_score
 from fairlearn.metrics import MetricFrame, demographic_parity_difference, equalized_odds_difference
 from fairlearn.metrics import selection_rate, true_positive_rate, false_positive_rate
 
-# 1. Load the UCI Heart Disease Dataset
-url = "https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data"
-columns = ["age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", 
-           "thalach", "exang", "oldpeak", "slope", "ca", "thal", "target"]
-df = pd.read_csv(url, names=columns, na_values="?")
+# 1. Fetch dataset using ucimlrepo
+heart_disease = fetch_ucirepo(id=45)
+
+X = heart_disease.data.features
+y = heart_disease.data.targets
+
+# Combine X and y temporarily to drop rows with missing values (NaNs)
+df = pd.concat([X, y], axis=1)
 df = df.dropna()
 
-# 2. Preprocess the Data
-df['target'] = (df['target'] > 0).astype(int)
+# Re-separate X and y after dropping NaNs
+target_col = y.columns[0]
+X = df.drop(target_col, axis=1)
+y = df[target_col]
 
-X = df.drop("target", axis=1)
-y = df["target"]
-sensitive_features = df["sex"]  # 1.0 = male, 0.0 = female
+# 2. Preprocess the Data
+# Binarize target: 0 = no disease, 1 = disease presence
+y = (y > 0).astype(int)
+sensitive_features = X["sex"]  # 1.0 = male, 0.0 = female
 
 X_train, X_test, y_train, y_test, A_train, A_test = train_test_split(
     X, y, sensitive_features, test_size=0.3, random_state=42
