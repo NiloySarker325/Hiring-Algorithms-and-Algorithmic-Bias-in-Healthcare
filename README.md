@@ -17,7 +17,7 @@ We utilize the benchmark **UCI Heart Disease Dataset** to compare a transparent 
 ## Repository Structure
 * `bias_audit.py`: The primary Python script that fetches the dataset, trains the Logistic Regression and XGBoost models, and generates fairness metrics.
 * `fpr_disparity.png`: Visualization of the False Positive Rate disparities between models (generated via matplotlib).
-* `Algorithmic_Bias_in_Healthcare_Research_Paper.docx`: The complete, publication-ready academic paper detailing the methodology and clinical implications.
+* `Algorithmic_Bias_in_Healthcare_Research_Paper.docx`: The complete, publication-ready academic paper detailing the methodology and clinical implications.  
 
 ## Installation & Setup
 To run this audit locally, you need Python installed along with the required data science and fairness libraries. 
